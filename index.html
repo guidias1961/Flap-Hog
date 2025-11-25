@@ -22,7 +22,6 @@
             margin: 0;
             padding: 0;
             background-color: var(--bg-color);
-            /* Chaotic background pattern */
             background-image: radial-gradient(circle at 20% 20%, var(--meme-purple) 5%, transparent 5%), 
                               radial-gradient(circle at 80% 80%, var(--neon-green) 5%, transparent 5%);
             background-size: 100px 100px;
@@ -38,35 +37,24 @@
             color: var(--meme-yellow);
             text-shadow: 3px 3px var(--meme-purple);
             font-size: 2rem;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             animation: shake 0.5s infinite alternate;
         }
 
-        .tagline {
-            font-size: 1.2rem;
-            color: var(--neon-green);
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-
-        /* GAME CONTAINER */
         #game-container {
             position: relative;
             width: 90%;
             max-width: 400px;
-            height: 600px;
+            height: 500px;
             margin: 0 auto;
             border: 5px solid var(--meme-yellow);
             box-shadow: 0 0 20px var(--neon-green);
-            background: linear-gradient(to bottom, #4ec0ca, #cceeff); /* Retro Sky */
+            background: linear-gradient(to bottom, #4ec0ca, #cceeff);
             overflow: hidden;
+            border-radius: 10px;
         }
 
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
+        canvas { display: block; width: 100%; height: 100%; }
 
         #score-display {
             position: absolute;
@@ -78,22 +66,17 @@
             color: white;
             text-shadow: 2px 2px 0 #000;
             z-index: 10;
+            pointer-events: none;
         }
 
         #start-screen, #game-over-screen {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: rgba(0,0,0,0.7);
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.85);
             z-index: 20;
         }
-
         #game-over-screen { display: none; }
 
         .screen-text {
@@ -101,102 +84,228 @@
             color: var(--meme-yellow);
             text-shadow: 2px 2px var(--meme-purple);
             margin-bottom: 20px;
+            font-size: 1.2rem;
         }
         
+        #username-input {
+            background: black;
+            border: 2px solid var(--neon-green);
+            color: var(--neon-green);
+            font-family: 'Press Start 2P', cursive;
+            padding: 10px;
+            text-align: center;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            width: 70%;
+            font-size: 0.8rem;
+            outline: none;
+            box-shadow: 0 0 10px var(--neon-green);
+        }
+        #username-input::placeholder { color: #555; }
+
         .meme-btn {
             background: var(--meme-purple);
             border: 3px solid var(--neon-green);
             color: var(--neon-green);
             padding: 15px 30px;
             font-family: 'Press Start 2P', cursive;
-            font-size: 1rem;
+            font-size: 0.8rem;
             cursor: pointer;
             box-shadow: 5px 5px 0px 0px var(--neon-green);
-            transition: transform 0.1s;
+            text-transform: uppercase;
         }
-        
-        .meme-btn:active {
-            transform: translate(3px, 3px);
-            box-shadow: 2px 2px 0px 0px var(--neon-green);
+        .meme-btn:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0px 0px var(--neon-green); }
+
+        /* LEADERBOARD REAL */
+        .leaderboard-container {
+            width: 90%; max-width: 400px; margin: 20px auto;
+            background: rgba(0, 0, 0, 0.9);
+            border: 3px solid var(--meme-purple);
+            box-shadow: 0 0 15px var(--meme-purple);
+            padding: 10px; border-radius: 10px;
         }
 
-        /* SOCIAL BUTTONS AREA */
+        .leaderboard-title {
+            font-family: 'Press Start 2P', cursive;
+            color: var(--neon-green);
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            border-bottom: 2px dashed var(--meme-yellow);
+            padding-bottom: 10px;
+        }
+
+        table { width: 100%; border-collapse: collapse; font-family: 'Press Start 2P', cursive; font-size: 0.6rem; color: white; }
+        th { color: var(--meme-yellow); padding: 10px 0; }
+        td { padding: 8px 0; border-bottom: 1px solid #333; }
+        tr:nth-child(1) td { color: var(--neon-green); text-shadow: 0 0 5px var(--neon-green); }
+
         .actions-container {
-            margin-top: 30px;
-            padding-bottom: 50px;
+            margin-top: 10px;
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
+            margin-bottom: 30px;
         }
 
         .social-btn {
             display: inline-block;
-            padding: 15px 25px;
+            padding: 10px 20px;
             font-weight: bold;
             text-decoration: none;
-            border-radius: 10px;
-            font-size: 1.2rem;
-            border: 3px solid black;
-            transform: rotate(-2deg);
+            border-radius: 5px;
+            font-size: 1rem;
+            border: 2px solid black;
+            font-family: 'Comic Neue', cursive;
             transition: transform 0.2s;
         }
         
-        .social-btn:hover { transform: rotate(2deg) scale(1.1); }
+        .social-btn:hover { transform: scale(1.1); }
         .btn-x { background-color: black; color: white; border-color: var(--meme-yellow); }
-        .btn-tg { background-color: #0088cc; color: white; border-color: var(--neon-green); }
-        .btn-buy { background-color: var(--neon-green); color: black; border-color: var(--meme-purple); font-size: 1.5rem; animation: pulse 1s infinite; }
+        .btn-buy { background-color: var(--neon-green); color: black; border-color: var(--meme-purple); font-weight: 900; animation: pulse 1s infinite; }
 
-        /* ANIMATIONS */
-        @keyframes shake {
-            from { transform: rotate(-1deg); }
-            to { transform: rotate(1deg); }
-        }
-        @keyframes pulse {
-            0% { transform: scale(1) rotate(2deg); }
-            50% { transform: scale(1.05) rotate(2deg); }
-            100% { transform: scale(1) rotate(2deg); }
-        }
-
-        /* Responsive adjustments */
-        @media (max-height: 700px) {
-            #game-container { height: 450px; }
-        }
+        @keyframes shake { from { transform: rotate(-1deg); } to { transform: rotate(1deg); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
     <header>
         <h1>$FHOG</h1>
-        <p class="tagline">Oink Oink to the Moon! 🚀 Don't get rekt.</p>
+        <p style="color:var(--neon-green); font-weight:bold;">Global Leaderboard 🌍</p>
     </header>
 
     <main id="game-container">
         <div id="score-display">0</div>
         
         <div id="start-screen">
-            <p class="screen-text">TAP TO FLAP!</p>
-            <p style="color:white; font-size: 0.8rem;">(Spacebar or Click)</p>
+            <p class="screen-text">ENTER CHAD NAME:</p>
+            <input type="text" id="username-input" placeholder="NAME" maxlength="8" autocomplete="off">
+            <button class="meme-btn" id="start-btn">PLAY GLOBAL</button>
+            <p style="color:var(--meme-yellow); font-size: 0.6rem; margin-top:10px;">(Spacebar / Click)</p>
         </div>
         
         <div id="game-over-screen">
             <p class="screen-text" style="color: red;">REKT!</p>
-            <p class="screen-text" style="font-size: 1rem;">Score: <span id="final-score">0</span></p>
-            <button class="meme-btn" id="restart-btn">TRY AGAIN CHAD</button>
+            <p class="screen-text" style="font-size: 0.8rem;">Score: <span id="final-score">0</span></p>
+            <p id="saving-text" style="color: #fff; font-size: 0.6rem;">SAVING TO BLOCKCHAIN...</p>
+            <button class="meme-btn" id="restart-btn">PLAY AGAIN</button>
         </div>
 
         <canvas id="gameCanvas"></canvas>
     </main>
 
-    <section class="actions-container">
-        <a href="YOUR_TWITTER_LINK" target="_blank" class="social-btn btn-x">X (Twitter)</a>
-        <a href="YOUR_TELEGRAM_LINK" target="_blank" class="social-btn btn-tg">Telegram</a>
-        <a href="YOUR_DEX_LINK" target="_blank" class="social-btn btn-buy">BUY $FHOG NOW</a>
+    <section class="leaderboard-container">
+        <div class="leaderboard-title">🔴 LIVE GLOBAL RANKING</div>
+        <table id="leaderboard">
+            <thead>
+                <tr>
+                    <th style="width: 20%">#</th>
+                    <th style="width: 50%">CHAD</th>
+                    <th style="width: 30%">PTS</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+                <tr><td colspan="3">Connecting to chain...</td></tr>
+            </tbody>
+        </table>
     </section>
+
+    <section class="actions-container">
+        <a href="#" target="_blank" class="social-btn btn-x">X (Twitter)</a>
+        <a href="#" target="_blank" class="social-btn btn-buy">BUY $FHOG</a>
+    </section>
+
+    <!-- FIREBASE CONFIGURATION & LOGIC -->
+    <script type="module">
+        // Using CDN links for direct browser usage without bundlers
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-analytics.js";
+        import { getDatabase, ref, push, set, onValue, query, orderByChild, limitToLast } 
+        from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
+        // ===============================================================
+        // YOUR FIREBASE CONFIGURATION
+        // ===============================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBjCBf3APmMOEjgb_u2Xm30RRTdzd9O0zU",
+            authDomain: "flap-hog.firebaseapp.com",
+            projectId: "flap-hog",
+            storageBucket: "flap-hog.firebasestorage.app",
+            messagingSenderId: "690534314688",
+            appId: "1:690534314688:web:9561192fa2562555e9b325",
+            measurementId: "G-EHNCKH5XT2"
+        };
+        // ===============================================================
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+        
+        // ----------------------------------------------------
+        // FIREBASE FUNCTIONS (Make accessible globally)
+        // ----------------------------------------------------
+        window.saveScoreToFirebase = function(name, score) {
+            const scoresRef = ref(db, 'scores');
+            const newScoreRef = push(scoresRef);
+            set(newScoreRef, {
+                username: name,
+                score: score,
+                timestamp: Date.now()
+            }).then(() => {
+                const savingText = document.getElementById('saving-text');
+                if(savingText) savingText.innerText = "SCORE SAVED ON CHAIN!";
+            }).catch((error) => {
+                const savingText = document.getElementById('saving-text');
+                if(savingText) savingText.innerText = "ERROR SAVING (CHECK CONSOLE)!";
+                console.error("Firebase Error:", error);
+            });
+        };
+
+        // ----------------------------------------------------
+        // LISTEN FOR REALTIME LEADERBOARD UPDATES
+        // ----------------------------------------------------
+        const leaderboardBody = document.getElementById('leaderboard-body');
+        
+        // Query top 10 scores
+        const topScoresQuery = query(ref(db, 'scores'), orderByChild('score'), limitToLast(10));
+
+        onValue(topScoresQuery, (snapshot) => {
+            const data = snapshot.val();
+            leaderboardBody.innerHTML = ""; // Clear table
+            
+            if (!data) {
+                leaderboardBody.innerHTML = "<tr><td colspan='3'>No scores yet. Be the first!</td></tr>";
+                return;
+            }
+
+            // Firebase returns object, convert to array
+            const parsedScores = Object.values(data);
+            
+            // Sort Descending (Highest first)
+            parsedScores.sort((a, b) => b.score - a.score);
+
+            parsedScores.forEach((entry, index) => {
+                // Sanitize input to prevent HTML injection
+                const safeName = entry.username ? entry.username.replace(/</g, "&lt;").replace(/>/g, "&gt;") : "ANON";
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td style="color: ${index === 0 ? 'var(--neon-green)' : 'white'}">${safeName}</td>
+                    <td>${entry.score}</td>
+                `;
+                leaderboardBody.appendChild(tr);
+            });
+        }, (error) => {
+            console.error("Leaderboard Error:", error);
+            leaderboardBody.innerHTML = "<tr><td colspan='3' style='color:red'>DB Error. Check Rules.</td></tr>";
+        });
+    </script>
 
     <script>
         // ===========================
-        // GAME ASSETS & VARIABLES
+        // GAME LOGIC (Canvas)
         // ===========================
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -205,165 +314,94 @@
         const gameOverScreen = document.getElementById('game-over-screen');
         const finalScoreDisplay = document.getElementById('final-score');
         const restartBtn = document.getElementById('restart-btn');
+        const startBtn = document.getElementById('start-btn');
+        const usernameInput = document.getElementById('username-input');
 
-        // Internal Game Resolution
         const gameWidth = 320;
         const gameHeight = 480;
         canvas.width = gameWidth;
         canvas.height = gameHeight;
 
-        // Game State
-        let gameState = 'start'; // start, playing, gameover
+        let gameState = 'start'; 
         let score = 0;
         let frames = 0;
         const groundHeight = 50;
+        let currentPlayerName = "ANON";
 
-        // LOAD THE HOG IMAGE
         const hogImg = new Image();
-        hogImg.src = 'hog_sprite.png'; 
+        hogImg.src = 'hog_sprite.png'; // Must be in same folder or use URL
 
-        // THE HOG (Player)
         const hog = {
-            x: 50,
-            y: 150,
-            // UPDATED SIZE: Doubled from 40 to 80
-            width: 80,  
-            height: 80,
-            velocity: 0,
-            gravity: 0.25,
-            jump: -4.5,
-            rotation: 0,
-            
+            x: 50, y: 150, width: 40, height: 40, velocity: 0, gravity: 0.25, jump: -4.5, rotation: 0,
             draw: function() {
                 ctx.save();
                 ctx.translate(this.x + this.width/2, this.y + this.height/2);
-                
                 if (this.velocity < 0) this.rotation = -25 * Math.PI / 180;
                 else if (this.velocity > 0) this.rotation = Math.min(this.velocity * 4, 90) * Math.PI / 180;
-                
                 ctx.rotate(this.rotation);
-
-                try {
-                     ctx.drawImage(hogImg, -this.width/2, -this.height/2, this.width, this.height);
-                } catch (e) {
-                    ctx.fillStyle = 'red';
-                    ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
-                }
-               
+                // Fallback pink square if image fails
+                ctx.fillStyle = '#ff00ff';
+                ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
+                try { ctx.drawImage(hogImg, -this.width/2, -this.height/2, this.width, this.height); } catch(e){}
                 ctx.restore();
             },
-
             update: function() {
                 if (gameState !== 'playing') return;
                 this.velocity += this.gravity;
                 this.y += this.velocity;
-
-                // Ground Collision
                 if (this.y + this.height >= gameHeight - groundHeight) {
                     this.y = gameHeight - groundHeight - this.height;
                     endGame();
                 }
-                // Ceiling Collision
-                if (this.y < 0) {
-                    this.y = 0;
-                    this.velocity = 0;
-                }
+                if (this.y < 0) { this.y = 0; this.velocity = 0; }
             },
-
-            flap: function() {
-                this.velocity = this.jump;
-            }
+            flap: function() { this.velocity = this.jump; }
         };
 
-        // PIPES
         const pipes = {
-            position: [],
-            width: 52,
-            // UPDATED GAP: Increased to 190 to fit the Big Hog
-            gap: 190, 
-            dx: 2,
-            minHeight: 40,
-
+            position: [], width: 52, gap: 120, dx: 2, minHeight: 40,
             draw: function() {
                 for(let i = 0; i < this.position.length; i++) {
                     let p = this.position[i];
                     let topY = p.y;
                     let bottomY = p.y + this.gap;
-
                     ctx.fillStyle = '#2ecc71';
                     ctx.strokeStyle = '#27ae60';
                     ctx.lineWidth = 3;
-
-                    // Top Pipe
                     ctx.fillRect(p.x, 0, this.width, topY);
                     ctx.strokeRect(p.x, 0, this.width, topY);
-                    ctx.fillRect(p.x - 2, topY - 20, this.width + 4, 20); // Cap
-                    ctx.strokeRect(p.x - 2, topY - 20, this.width + 4, 20);
-                    
-                    // Bottom Pipe
                     ctx.fillRect(p.x, bottomY, this.width, gameHeight - bottomY - groundHeight);
                     ctx.strokeRect(p.x, bottomY, this.width, gameHeight - bottomY - groundHeight);
-                    ctx.fillRect(p.x - 2, bottomY, this.width + 4, 20); // Cap
-                    ctx.strokeRect(p.x - 2, bottomY, this.width + 4, 20);
                 }
             },
-
             update: function() {
                 if (gameState !== 'playing') return;
-
-                if (frames % 100 === 0) {
+                if (frames % 120 === 0) {
                     const maxY = gameHeight - groundHeight - this.gap - this.minHeight;
                     const randomY = Math.floor(Math.random() * (maxY - this.minHeight + 1)) + this.minHeight;
                     this.position.push({ x: gameWidth, y: randomY });
                 }
-
                 for(let i = 0; i < this.position.length; i++) {
                     let p = this.position[i];
                     p.x -= this.dx;
-                    
                     let bottomPipeY = p.y + this.gap;
-                    
-                    // Collision (Hitbox made slightly smaller than visual size for fairness)
-                    // We use a "padding" variable so the pig's edges don't trigger death instantly
-                    let padding = 10; 
-                    
-                    if (
-                        hog.x + hog.width - padding > p.x && 
-                        hog.x + padding < p.x + this.width && 
-                        (hog.y + padding < p.y || hog.y + hog.height - padding > bottomPipeY)
-                    ) {
+                    if (hog.x + hog.width > p.x && hog.x < p.x + this.width && (hog.y < p.y || hog.y + hog.height > bottomPipeY)) {
                         endGame();
                     }
-
-                    // Score
                     if (p.x + this.width < hog.x && !p.passed) {
                         score++;
                         scoreDisplay.innerText = score;
                         p.passed = true;
                     }
-
-                    if (p.x + this.width <= 0) {
-                        this.position.shift();
-                        i--;
-                    }
+                    if (p.x + this.width <= 0) { this.position.shift(); i--; }
                 }
             },
-            reset: function() {
-                 this.position = [];
-            }
+            reset: function() { this.position = []; }
         };
 
-        // BACKGROUND GROUND
         function drawGround() {
             ctx.fillStyle = '#dcd895';
             ctx.fillRect(0, gameHeight - groundHeight, gameWidth, groundHeight);
-            
-            ctx.fillStyle = '#c2be84';
-            let offset = (frames * pipes.dx) % 20;
-            for(let i = 0; i < gameWidth / 20 + 1; i++) {
-                 ctx.fillRect(i * 20 - offset, gameHeight - groundHeight, 10, 5);
-            }
-            
             ctx.strokeStyle = '#555';
             ctx.beginPath();
             ctx.moveTo(0, gameHeight - groundHeight);
@@ -371,36 +409,34 @@
             ctx.stroke();
         }
 
-        // ===========================
-        // GAME LOOP
-        // ===========================
-
         function gameLoop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
             if (gameState === 'playing') frames++;
-            
             pipes.draw();
             pipes.update();
             drawGround();
             hog.draw();
             hog.update();
-
             requestAnimationFrame(gameLoop);
         }
 
-        function flapAction(e) {
-            if (e.cancelable && e.target === canvas) e.preventDefault();
+        function startGame() {
+            const name = usernameInput.value.trim();
+            if(!name) {
+                usernameInput.style.borderColor = 'red';
+                usernameInput.placeholder = "NEED NAME!";
+                return;
+            }
+            currentPlayerName = name;
+            startScreen.style.display = 'none';
+            gameState = 'playing';
+            hog.flap();
+        }
 
-            switch(gameState) {
-                case 'start':
-                    gameState = 'playing';
-                    startScreen.style.display = 'none';
-                    hog.flap();
-                    break;
-                case 'playing':
-                    hog.flap();
-                    break;
+        function flapAction(e) {
+            if(gameState === 'playing') {
+                if(e.type === 'keydown' && e.code !== 'Space') return;
+                hog.flap();
             }
         }
 
@@ -408,34 +444,31 @@
             gameState = 'gameover';
             gameOverScreen.style.display = 'flex';
             finalScoreDisplay.innerText = score;
+            
+            // CALL THE FIREBASE FUNCTION
+            if(window.saveScoreToFirebase) {
+                window.saveScoreToFirebase(currentPlayerName, score);
+            }
         }
 
         function resetGame() {
             gameState = 'start';
-            score = 0;
-            frames = 0;
+            score = 0; frames = 0;
             scoreDisplay.innerText = '0';
-            hog.y = 150;
-            hog.velocity = 0;
-            hog.rotation = 0;
+            hog.y = 150; hog.velocity = 0;
             pipes.reset();
             gameOverScreen.style.display = 'none';
             startScreen.style.display = 'flex';
+            document.getElementById('saving-text').innerText = "SAVING TO BLOCKCHAIN...";
         }
-
-        // INPUTS
-        document.addEventListener('keydown', function(e) {
-            if(e.code === 'Space') flapAction(e);
-        });
-        
-        canvas.addEventListener('touchstart', flapAction, { passive: false });
-        canvas.addEventListener('mousedown', flapAction);
-        
-        restartBtn.addEventListener('click', resetGame);
 
         // INIT
         gameLoop();
-
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', resetGame);
+        document.addEventListener('keydown', (e) => { if(gameState === 'playing' && e.code === 'Space') flapAction(e); });
+        canvas.addEventListener('mousedown', flapAction);
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); flapAction(e); }, { passive: false });
     </script>
 </body>
 </html>
