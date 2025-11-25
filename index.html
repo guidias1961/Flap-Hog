@@ -217,7 +217,6 @@
 
     <!-- FIREBASE CONFIGURATION & LOGIC -->
     <script type="module">
-        // Using CDN links for direct browser usage without bundlers
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-analytics.js";
         import { getDatabase, ref, push, set, onValue, query, orderByChild, limitToLast } 
@@ -242,9 +241,7 @@
         const analytics = getAnalytics(app);
         const db = getDatabase(app);
         
-        // ----------------------------------------------------
-        // FIREBASE FUNCTIONS (Make accessible globally)
-        // ----------------------------------------------------
+        // FIREBASE FUNCTIONS
         window.saveScoreToFirebase = function(name, score) {
             const scoresRef = ref(db, 'scores');
             const newScoreRef = push(scoresRef);
@@ -262,33 +259,24 @@
             });
         };
 
-        // ----------------------------------------------------
         // LISTEN FOR REALTIME LEADERBOARD UPDATES
-        // ----------------------------------------------------
         const leaderboardBody = document.getElementById('leaderboard-body');
-        
-        // Query top 10 scores
         const topScoresQuery = query(ref(db, 'scores'), orderByChild('score'), limitToLast(10));
 
         onValue(topScoresQuery, (snapshot) => {
             const data = snapshot.val();
-            leaderboardBody.innerHTML = ""; // Clear table
+            leaderboardBody.innerHTML = ""; 
             
             if (!data) {
                 leaderboardBody.innerHTML = "<tr><td colspan='3'>No scores yet. Be the first!</td></tr>";
                 return;
             }
 
-            // Firebase returns object, convert to array
             const parsedScores = Object.values(data);
-            
-            // Sort Descending (Highest first)
             parsedScores.sort((a, b) => b.score - a.score);
 
             parsedScores.forEach((entry, index) => {
-                // Sanitize input to prevent HTML injection
                 const safeName = entry.username ? entry.username.replace(/</g, "&lt;").replace(/>/g, "&gt;") : "ANON";
-                
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${index + 1}</td>
@@ -305,7 +293,7 @@
 
     <script>
         // ===========================
-        // GAME LOGIC (Canvas)
+        // GAME LOGIC (FIXED PHYSICS & STYLES)
         // ===========================
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -324,31 +312,43 @@
 
         let gameState = 'start'; 
         let score = 0;
-        let frames = 0;
         const groundHeight = 50;
         let currentPlayerName = "ANON";
 
+        // Time-based movement variables
+        let lastTime = 0; // Fixed Syntax Error Here
+        let pipeSpawnTimer = 0;
+
         const hogImg = new Image();
-        hogImg.src = 'hog_sprite.png'; // Must be in same folder or use URL
+        hogImg.src = 'hog_sprite.png'; 
 
         const hog = {
-            x: 50, y: 150, width: 40, height: 40, velocity: 0, gravity: 0.25, jump: -4.5, rotation: 0,
+            x: 50, y: 150, width: 40, height: 40, 
+            velocity: 0, 
+            gravity: 0.25 * (60/1000), // Adjusted for deltaTime (approx)
+            jump: -4.5, 
+            rotation: 0,
             draw: function() {
                 ctx.save();
                 ctx.translate(this.x + this.width/2, this.y + this.height/2);
                 if (this.velocity < 0) this.rotation = -25 * Math.PI / 180;
                 else if (this.velocity > 0) this.rotation = Math.min(this.velocity * 4, 90) * Math.PI / 180;
                 ctx.rotate(this.rotation);
-                // Fallback pink square if image fails
-                ctx.fillStyle = '#ff00ff';
-                ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
+                
+                // NO PINK BOX - If image loads, it draws. If not, invisible.
                 try { ctx.drawImage(hogImg, -this.width/2, -this.height/2, this.width, this.height); } catch(e){}
+                
+                // Fallback circle if image is broken (Optional, keeping clean for now as requested)
+                // if (!hogImg.complete) { ctx.fillStyle = 'purple'; ctx.beginPath(); ctx.arc(0,0,20,0,Math.PI*2); ctx.fill(); }
+                
                 ctx.restore();
             },
-            update: function() {
+            update: function(deltaTime) {
                 if (gameState !== 'playing') return;
-                this.velocity += this.gravity;
-                this.y += this.velocity;
+                // Use deltaTime for consistent physics across devices
+                this.velocity += this.gravity * deltaTime;
+                this.y += this.velocity * (deltaTime / 16.66); // Normalize to ~60fps
+
                 if (this.y + this.height >= gameHeight - groundHeight) {
                     this.y = gameHeight - groundHeight - this.height;
                     endGame();
@@ -359,33 +359,51 @@
         };
 
         const pipes = {
-            position: [], width: 52, gap: 120, dx: 2, minHeight: 40,
+            position: [], width: 52, gap: 120, dx: 0.15, minHeight: 40,
             draw: function() {
                 for(let i = 0; i < this.position.length; i++) {
                     let p = this.position[i];
                     let topY = p.y;
                     let bottomY = p.y + this.gap;
-                    ctx.fillStyle = '#2ecc71';
-                    ctx.strokeStyle = '#27ae60';
-                    ctx.lineWidth = 3;
+                    
+                    // CLASSIC FLAPPY BIRD STYLE PIPES
+                    ctx.fillStyle = '#73bf2e'; // Lighter green
+                    ctx.strokeStyle = '#543847'; // Dark border
+                    ctx.lineWidth = 2;
+
+                    // Top Pipe
                     ctx.fillRect(p.x, 0, this.width, topY);
                     ctx.strokeRect(p.x, 0, this.width, topY);
+                    ctx.fillRect(p.x - 2, topY - 20, this.width + 4, 20); // Cap
+                    ctx.strokeRect(p.x - 2, topY - 20, this.width + 4, 20);
+
+                    // Bottom Pipe
                     ctx.fillRect(p.x, bottomY, this.width, gameHeight - bottomY - groundHeight);
                     ctx.strokeRect(p.x, bottomY, this.width, gameHeight - bottomY - groundHeight);
+                    ctx.fillRect(p.x - 2, bottomY, this.width + 4, 20); // Cap
+                    ctx.strokeRect(p.x - 2, bottomY, this.width + 4, 20);
                 }
             },
-            update: function() {
+            update: function(deltaTime) {
                 if (gameState !== 'playing') return;
-                if (frames % 120 === 0) {
+                
+                pipeSpawnTimer += deltaTime;
+                if (pipeSpawnTimer > 1800) { // Spawn every ~1.8 seconds
                     const maxY = gameHeight - groundHeight - this.gap - this.minHeight;
                     const randomY = Math.floor(Math.random() * (maxY - this.minHeight + 1)) + this.minHeight;
                     this.position.push({ x: gameWidth, y: randomY });
+                    pipeSpawnTimer = 0;
                 }
+
                 for(let i = 0; i < this.position.length; i++) {
                     let p = this.position[i];
-                    p.x -= this.dx;
+                    // Use deltaTime for movement
+                    p.x -= this.dx * deltaTime;
+                    
                     let bottomPipeY = p.y + this.gap;
-                    if (hog.x + hog.width > p.x && hog.x < p.x + this.width && (hog.y < p.y || hog.y + hog.height > bottomPipeY)) {
+                    let padding = 5; // Hitbox padding
+                    if (hog.x + hog.width - padding > p.x && hog.x + padding < p.x + this.width && 
+                       (hog.y + padding < p.y || hog.y + hog.height - padding > bottomPipeY)) {
                         endGame();
                     }
                     if (p.x + this.width < hog.x && !p.passed) {
@@ -396,28 +414,42 @@
                     if (p.x + this.width <= 0) { this.position.shift(); i--; }
                 }
             },
-            reset: function() { this.position = []; }
+            reset: function() { this.position = []; pipeSpawnTimer = 0; }
         };
 
         function drawGround() {
-            ctx.fillStyle = '#dcd895';
+            ctx.fillStyle = '#ded895';
             ctx.fillRect(0, gameHeight - groundHeight, gameWidth, groundHeight);
-            ctx.strokeStyle = '#555';
+            
+            ctx.fillStyle = '#73bf2e'; // Grass top
+            ctx.fillRect(0, gameHeight - groundHeight, gameWidth, 12);
+            
+            ctx.strokeStyle = '#543847';
             ctx.beginPath();
             ctx.moveTo(0, gameHeight - groundHeight);
             ctx.lineTo(gameWidth, gameHeight - groundHeight);
             ctx.stroke();
         }
 
-        function gameLoop() {
+        function gameLoop(timestamp) {
+            // Calculate deltaTime
+            let deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+            
+            // Prevent huge jumps if tab is inactive
+            if (deltaTime > 100) deltaTime = 100;
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if (gameState === 'playing') frames++;
+            
             pipes.draw();
-            pipes.update();
+            pipes.update(deltaTime);
             drawGround();
             hog.draw();
-            hog.update();
-            requestAnimationFrame(gameLoop);
+            hog.update(deltaTime);
+            
+            if (gameState === 'playing') {
+                requestAnimationFrame(gameLoop);
+            }
         }
 
         function startGame() {
@@ -431,6 +463,8 @@
             startScreen.style.display = 'none';
             gameState = 'playing';
             hog.flap();
+            lastTime = performance.now(); // Reset time - Fixed syntax here too
+            requestAnimationFrame(gameLoop); // Start loop
         }
 
         function flapAction(e) {
@@ -444,26 +478,28 @@
             gameState = 'gameover';
             gameOverScreen.style.display = 'flex';
             finalScoreDisplay.innerText = score;
-            
-            // CALL THE FIREBASE FUNCTION
-            if(window.saveScoreToFirebase) {
-                window.saveScoreToFirebase(currentPlayerName, score);
-            }
+            if(window.saveScoreToFirebase) window.saveScoreToFirebase(currentPlayerName, score);
         }
 
         function resetGame() {
             gameState = 'start';
-            score = 0; frames = 0;
+            score = 0; 
             scoreDisplay.innerText = '0';
             hog.y = 150; hog.velocity = 0;
             pipes.reset();
             gameOverScreen.style.display = 'none';
             startScreen.style.display = 'flex';
             document.getElementById('saving-text').innerText = "SAVING TO BLOCKCHAIN...";
+            
+            // Draw initial state without starting loop
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            pipes.draw();
+            drawGround();
+            hog.draw();
         }
 
         // INIT
-        gameLoop();
+        resetGame(); // Draw initial frame
         startBtn.addEventListener('click', startGame);
         restartBtn.addEventListener('click', resetGame);
         document.addEventListener('keydown', (e) => { if(gameState === 'playing' && e.code === 'Space') flapAction(e); });
